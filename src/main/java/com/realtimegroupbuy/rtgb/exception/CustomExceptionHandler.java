@@ -22,8 +22,8 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Object> handleBadRequestException(BadRequestException exception) {
+    @ExceptionHandler(CustomBadRequestException.class)
+    public ResponseEntity<Object> handleBadRequestException(CustomBadRequestException exception) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.BAD_REQUEST.value());
