@@ -1,5 +1,6 @@
 package com.realtimegroupbuy.rtgb.service;
 
+import com.realtimegroupbuy.rtgb.exception.ResourceNotFoundException;
 import com.realtimegroupbuy.rtgb.model.User;
 import com.realtimegroupbuy.rtgb.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("User Not Found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
     }
 
     public User createUser(User user) {
