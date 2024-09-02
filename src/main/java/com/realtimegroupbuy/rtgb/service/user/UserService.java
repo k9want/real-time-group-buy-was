@@ -1,4 +1,4 @@
-package com.realtimegroupbuy.rtgb.service;
+package com.realtimegroupbuy.rtgb.service.user;
 
 import com.realtimegroupbuy.rtgb.exception.CustomBadRequestException;
 import com.realtimegroupbuy.rtgb.exception.ResourceNotFoundException;

@@ -2,7 +2,7 @@ package com.realtimegroupbuy.rtgb.controller.user;
 
 import com.realtimegroupbuy.rtgb.common.dto.ApiResponse;
 import com.realtimegroupbuy.rtgb.model.User;
-import com.realtimegroupbuy.rtgb.service.UserService;
+import com.realtimegroupbuy.rtgb.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.realtimegroupbuy.rtgb.configuration;
 
 import com.realtimegroupbuy.rtgb.configuration.filter.JwtTokenFilter;
-import com.realtimegroupbuy.rtgb.service.UserService;
+import com.realtimegroupbuy.rtgb.service.user.UserService;
 import com.realtimegroupbuy.rtgb.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,7 @@
 package com.realtimegroupbuy.rtgb.configuration.filter;
 
 import com.realtimegroupbuy.rtgb.model.User;
-import com.realtimegroupbuy.rtgb.service.UserService;
+import com.realtimegroupbuy.rtgb.service.user.UserService;
 import com.realtimegroupbuy.rtgb.util.JwtTokenUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
