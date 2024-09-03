@@ -41,4 +41,8 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
 }

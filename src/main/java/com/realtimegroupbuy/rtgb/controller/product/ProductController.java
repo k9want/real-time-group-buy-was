@@ -28,7 +28,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PreAuthorize("hasRole('ROLE_SELLER')")
+    @PreAuthorize("hasRole('SELLER')")
     @PostMapping("/product")
     public ApiResponse<ProductRegisterResponse> register(
         @RequestBody ProductRegisterRequest request,
