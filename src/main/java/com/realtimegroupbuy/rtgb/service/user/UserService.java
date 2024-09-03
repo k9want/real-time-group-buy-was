@@ -3,6 +3,7 @@ package com.realtimegroupbuy.rtgb.service.user;
 import com.realtimegroupbuy.rtgb.exception.CustomBadRequestException;
 import com.realtimegroupbuy.rtgb.exception.ResourceNotFoundException;
 import com.realtimegroupbuy.rtgb.model.User;
+import com.realtimegroupbuy.rtgb.model.enums.UserRole;
 import com.realtimegroupbuy.rtgb.repository.UserRepository;
 import com.realtimegroupbuy.rtgb.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class UserService {
             .nickname(nickname)
             .username(userName)
             .password(encoder.encode(password))
+            .role(UserRole.USER)
             .build();
 
         // 사용자 등록
@@ -59,6 +61,5 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
-
 
 }
