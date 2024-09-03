@@ -1,6 +1,7 @@
 package com.realtimegroupbuy.rtgb.service.product;
 
 import com.realtimegroupbuy.rtgb.controller.product.dto.ProductRegisterRequest;
+import com.realtimegroupbuy.rtgb.exception.ResourceNotFoundException;
 import com.realtimegroupbuy.rtgb.model.Product;
 import com.realtimegroupbuy.rtgb.model.Seller;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
@@ -33,4 +34,11 @@ public class ProductService {
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAllWithSeller(pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Product getProductById(Long productId) {
+        return productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException("Product Not Found - by productId"));
+    }
+
 }

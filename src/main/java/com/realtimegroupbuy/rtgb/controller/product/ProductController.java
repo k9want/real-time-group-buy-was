@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,13 +41,20 @@ public class ProductController {
     @GetMapping("/products")
     public ApiResponse<List<ProductResponse>> getAllProducts(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size)
-    {
+        @RequestParam(defaultValue = "10") int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Product> result = productService.getAllProducts(pageRequest);
         List<ProductResponse> response = result.stream()
             .map(ProductResponse::from)
             .toList();
         return ApiResponse.OK(response);
+    }
+
+    @GetMapping("/products/{productId}")
+    public ApiResponse<ProductResponse> getProductById(
+        @PathVariable("productId") Long productId
+    ) {
+        Product result = productService.getProductById(productId);
+        return ApiResponse.OK(ProductResponse.from(result));
     }
 }
