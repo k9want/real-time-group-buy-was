@@ -5,6 +5,8 @@ import com.realtimegroupbuy.rtgb.model.Product;
 import com.realtimegroupbuy.rtgb.model.Seller;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,5 +27,10 @@ public class ProductService {
             .seller(seller)
             .build();
         return productRepository.save(product);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAllWithSeller(pageable);
     }
 }
