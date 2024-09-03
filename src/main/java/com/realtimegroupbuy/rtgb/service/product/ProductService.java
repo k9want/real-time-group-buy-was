@@ -2,7 +2,7 @@ package com.realtimegroupbuy.rtgb.service.product;
 
 import com.realtimegroupbuy.rtgb.controller.product.dto.ProductRegisterRequest;
 import com.realtimegroupbuy.rtgb.model.Product;
-import com.realtimegroupbuy.rtgb.model.User;
+import com.realtimegroupbuy.rtgb.model.Seller;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,15 +15,15 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public Product register(ProductRegisterRequest request, User user) {
+    public Product register(ProductRegisterRequest request, Seller seller) {
         Product product = Product.builder()
             .name(request.name())
             .description(request.description())
             .price(request.price())
             .stock(request.stock())
             .category(request.category())
+            .seller(seller)
             .build();
-
         return productRepository.save(product);
     }
 }

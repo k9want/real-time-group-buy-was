@@ -45,7 +45,7 @@ public class UserService {
             throw new CustomBadRequestException("Invalid password");
         }
 
-        return jwtTokenUtils.generateToken(userName);
+        return jwtTokenUtils.generateToken(userName, user.getRole());
     }
 
     public User getUserById(Long id) {

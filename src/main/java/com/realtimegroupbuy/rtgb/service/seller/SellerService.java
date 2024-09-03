@@ -45,12 +45,17 @@ public class SellerService {
             throw new CustomBadRequestException("Invalid password");
         }
 
-        return jwtTokenUtils.generateToken(userName);
+        return jwtTokenUtils.generateToken(userName, seller.getRole());
     }
 
     public Seller getSellerById(Long id) {
         return sellerRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Seller Not Found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Seller Not Found By id"));
+    }
+
+    public Seller loadSellerByUsername(String username) {
+        return sellerRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("Seller Not Found By Username"));
     }
 
     public void delete(Long id) {sellerRepository.deleteById(id);

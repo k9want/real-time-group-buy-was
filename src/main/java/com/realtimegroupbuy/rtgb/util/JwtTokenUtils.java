@@ -1,5 +1,6 @@
 package com.realtimegroupbuy.rtgb.util;
 
+import com.realtimegroupbuy.rtgb.model.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,9 +24,10 @@ public class JwtTokenUtils {
         this.expiredTimeMs = expiredTimeMs;
     }
 
-    public String generateToken(String userName) {
+    public String generateToken(String userName, UserRole role) {
         Claims claims = Jwts.claims();
         claims.put("userName", userName);
+        claims.put("role", role);
 
         return Jwts.builder()
             .setClaims(claims)
@@ -42,6 +44,10 @@ public class JwtTokenUtils {
 
     public String getUserName(String token) {
         return extractClaims(token).get("userName", String.class);
+    }
+
+    public String getRole(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 
     private Claims extractClaims(String token) {
