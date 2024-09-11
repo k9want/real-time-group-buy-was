@@ -1,8 +1,8 @@
 package com.realtimegroupbuy.rtgb.controller.groupbuy;
 
 import com.realtimegroupbuy.rtgb.common.dto.ApiResponse;
-import com.realtimegroupbuy.rtgb.controller.groupbuy.dto.GroupBuyCreateRequest;
-import com.realtimegroupbuy.rtgb.controller.groupbuy.dto.GroupBuyCreateResponse;
+import com.realtimegroupbuy.rtgb.controller.groupbuy.dto.CreateGroupBuyRequest;
+import com.realtimegroupbuy.rtgb.controller.groupbuy.dto.CreateGroupBuyResponse;
 import com.realtimegroupbuy.rtgb.model.GroupBuy;
 import com.realtimegroupbuy.rtgb.model.User;
 import com.realtimegroupbuy.rtgb.service.groupbuy.GroupBuyService;
@@ -22,12 +22,12 @@ public class GroupBuyController {
     private final GroupBuyService groupBuyService;
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ApiResponse<GroupBuyCreateResponse> createGroupBuy(
-        @RequestBody GroupBuyCreateRequest request,
+    public ApiResponse<CreateGroupBuyResponse> createGroupBuy(
+        @RequestBody CreateGroupBuyRequest request,
         @AuthenticationPrincipal User user
     ) {
         GroupBuy result = groupBuyService.create(user, request.productId(), request.targetQuantity(),
             request.expiresAt());
-        return ApiResponse.OK(GroupBuyCreateResponse.from(result));
+        return ApiResponse.OK(CreateGroupBuyResponse.from(result));
     }
 }

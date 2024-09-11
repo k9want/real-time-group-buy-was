@@ -4,7 +4,7 @@ import com.realtimegroupbuy.rtgb.model.GroupBuy;
 import com.realtimegroupbuy.rtgb.model.enums.GroupBuyStatus;
 import java.time.LocalDateTime;
 
-public record GroupBuyCreateResponse(
+public record CreateGroupBuyResponse(
     Long groupBuyId,
     Long productId,
     String productName,
@@ -14,8 +14,8 @@ public record GroupBuyCreateResponse(
     LocalDateTime expiresAt, // 종료 시간
     GroupBuyStatus status // IN_PROGRESS - 공동구매 진행 중
 ) {
-    public static GroupBuyCreateResponse from(GroupBuy groupBuy) {
-        return new GroupBuyCreateResponse(
+    public static CreateGroupBuyResponse from(GroupBuy groupBuy) {
+        return new CreateGroupBuyResponse(
             groupBuy.getId(),
             groupBuy.getProduct().getId(),
             groupBuy.getProduct().getName(),
