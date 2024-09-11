@@ -1,11 +1,11 @@
-package com.realtimegroupbuy.rtgb.service.groupbuy;
+package com.realtimegroupbuy.rtgb.service.purchasegroup;
 
-import com.realtimegroupbuy.rtgb.model.GroupBuy;
+import com.realtimegroupbuy.rtgb.model.PurchaseGroup;
 import com.realtimegroupbuy.rtgb.model.Product;
 import com.realtimegroupbuy.rtgb.model.User;
-import com.realtimegroupbuy.rtgb.model.enums.GroupBuyStatus;
+import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import com.realtimegroupbuy.rtgb.model.enums.ProductStatus;
-import com.realtimegroupbuy.rtgb.repository.GroupBuyRepository;
+import com.realtimegroupbuy.rtgb.repository.PurchaseGroupRepository;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
 import com.realtimegroupbuy.rtgb.repository.UserRepository;
 import java.time.LocalDateTime;
@@ -14,15 +14,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GroupBuyService {
+public class PurchaseGroupService {
+
+    private static final int MINIMUM_PURCHASE_GROUP_ORDER_QUANTITY = 10;
+    private static final int DEFAULT__CURRENT_PURCHASE_QUANTITY = 0;
 
     private final UserRepository userRepository;
-    private final GroupBuyRepository groupBuyRepository;
+    private final PurchaseGroupRepository purchaseGroupRepository;
     private final ProductRepository productRepository;
 
-    public GroupBuy create(User user, Long productId, Integer targetQuantity, LocalDateTime expiredAt) {
+    public PurchaseGroup create(User user, Long productId, Integer targetQuantity, LocalDateTime expiredAt) {
         // 도메인 (최소 주문 개수: 10개 이상, 최소 유효 기간: 1일)
-        if (targetQuantity < 10) {
+        if (targetQuantity < MINIMUM_PURCHASE_GROUP_ORDER_QUANTITY) {
             throw new IllegalArgumentException("최소 공동 구매 수량은 10개 이상입니다.");
         }
 
@@ -47,15 +50,15 @@ public class GroupBuyService {
         productRepository.save(product);
 
         // 공동구매 그룹 생성
-        GroupBuy groupBuy = GroupBuy.builder()
+        PurchaseGroup purchaseGroup = PurchaseGroup.builder()
             .product(product)
             .creator(creator)
             .targetPurchaseQuantity(targetQuantity)
-            .currentPurchaseQuantityCount(0)
+            .currentPurchaseQuantityCount(DEFAULT__CURRENT_PURCHASE_QUANTITY)
             .expiresAt(expiredAt)
-            .status(GroupBuyStatus.IN_PROGRESS)
+            .status(PurchaseGroupStatus.IN_PROGRESS)
             .build();
 
-        return groupBuyRepository.save(groupBuy);
+        return purchaseGroupRepository.save(purchaseGroup);
     }
 }

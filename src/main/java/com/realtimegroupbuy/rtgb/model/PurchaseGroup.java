@@ -1,6 +1,6 @@
 package com.realtimegroupbuy.rtgb.model;
 
-import com.realtimegroupbuy.rtgb.model.enums.GroupBuyStatus;
+import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GroupBuy {
+public class PurchaseGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,5 +38,5 @@ public class GroupBuy {
     private Integer currentPurchaseQuantityCount; // 현재 구매 수량
     private LocalDateTime expiresAt; // 종료 시간
     @Enumerated(EnumType.STRING)
-    private GroupBuyStatus status;
+    private PurchaseGroupStatus status;
 }

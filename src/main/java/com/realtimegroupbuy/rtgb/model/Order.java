@@ -26,9 +26,10 @@ public class Order {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_buy_id")
-    private GroupBuy groupBuy;
+    @JoinColumn(name = "purchase_group_id")
+    private PurchaseGroup purchaseGroup;
 
+    private Integer quantity;
     private Double amount;
 
     @Enumerated(EnumType.STRING)
