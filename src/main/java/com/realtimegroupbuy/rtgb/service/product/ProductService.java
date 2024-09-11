@@ -4,6 +4,7 @@ import com.realtimegroupbuy.rtgb.controller.product.dto.ProductRegisterRequest;
 import com.realtimegroupbuy.rtgb.exception.ResourceNotFoundException;
 import com.realtimegroupbuy.rtgb.model.Product;
 import com.realtimegroupbuy.rtgb.model.Seller;
+import com.realtimegroupbuy.rtgb.model.enums.ProductStatus;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public class ProductService {
             .stock(request.stock())
             .category(request.category())
             .seller(seller)
+            .status(ProductStatus.AVAILABLE)
             .build();
         return productRepository.save(product);
     }

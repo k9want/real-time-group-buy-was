@@ -4,6 +4,7 @@ import com.realtimegroupbuy.rtgb.model.GroupBuy;
 import com.realtimegroupbuy.rtgb.model.Product;
 import com.realtimegroupbuy.rtgb.model.User;
 import com.realtimegroupbuy.rtgb.model.enums.GroupBuyStatus;
+import com.realtimegroupbuy.rtgb.model.enums.ProductStatus;
 import com.realtimegroupbuy.rtgb.repository.GroupBuyRepository;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
 import com.realtimegroupbuy.rtgb.repository.UserRepository;
@@ -36,13 +37,13 @@ public class GroupBuyService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
-        // 제품 재고 파악
-        if (product.getStock() < targetQuantity) {
-            throw new IllegalArgumentException("현재 제품의 재고보다 많은 수량을 지정했습니다.");
+        // 제품 구매 가능 여부 확인
+        if (product.getStatus() != ProductStatus.AVAILABLE) {
+            throw new IllegalArgumentException("해당 제품은 현재 판매 중단 상태이거나 품절입니다.");
         }
 
         // 제품 재고 차감 - 공동 구매 그룹을 위해 미리 재고 확보 (동시성 문제 발생 지점)
-        product.setStock(product.getStock() - targetQuantity);
+        product.discountStock(targetQuantity);
         productRepository.save(product);
 
         // 공동구매 그룹 생성
