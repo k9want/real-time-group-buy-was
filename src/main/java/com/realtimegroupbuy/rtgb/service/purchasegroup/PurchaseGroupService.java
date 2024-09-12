@@ -11,6 +11,7 @@ import com.realtimegroupbuy.rtgb.repository.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class PurchaseGroupService {
     private final PurchaseGroupRepository purchaseGroupRepository;
     private final ProductRepository productRepository;
 
+    @Transactional
     public PurchaseGroup create(User user, Long productId, Integer targetQuantity, LocalDateTime expiredAt) {
         // 도메인 (최소 주문 개수: 10개 이상, 최소 유효 기간: 1일)
         if (targetQuantity < MINIMUM_PURCHASE_GROUP_ORDER_QUANTITY) {
@@ -61,4 +63,18 @@ public class PurchaseGroupService {
 
         return purchaseGroupRepository.save(purchaseGroup);
     }
+
+    @Transactional
+    public void updatePurchaseGroupParticipation(PurchaseGroup purchaseGroup, Integer orderQuantity) {
+        // 공동 구매 그룹에 구매 수량 업데이트 요청
+        purchaseGroup.updatePurchaseQuantity(orderQuantity);
+        purchaseGroupRepository.save(purchaseGroup); // 변경된 상태를 저장
+    }
+
+    public PurchaseGroup findById(Long purchaseGroupId) {
+        return purchaseGroupRepository.findById(purchaseGroupId)
+            .orElseThrow(() -> new IllegalArgumentException("공동구매 그룹이 존재하지 않습니다."));
+    }
+
+
 }

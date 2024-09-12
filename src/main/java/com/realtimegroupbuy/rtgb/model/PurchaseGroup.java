@@ -39,4 +39,21 @@ public class PurchaseGroup {
     private LocalDateTime expiresAt; // 종료 시간
     @Enumerated(EnumType.STRING)
     private PurchaseGroupStatus status;
+
+    // 공동 구매 참여 가능 여부 확인 메서드
+    public void validatePurchaseGroupParticipation(Integer orderQuantity) {
+        if (this.status != PurchaseGroupStatus.IN_PROGRESS) {
+            throw new IllegalStateException("현재 공동구매에 참여할 수 없습니다.");
+        }
+
+        // 목표 구매 수량 < 현재 구매 수량 + 주문 수량
+        if (this.targetPurchaseQuantity < this.currentPurchaseQuantityCount + orderQuantity) {
+            throw new IllegalArgumentException("현재 재고가 부족하여 해당 수량을 구매할 수 없습니다.");
+        }
+    }
+
+    // 공동 구매 수량 업데이트
+    public void updatePurchaseQuantity(Integer orderQuantity) {
+        this.currentPurchaseQuantityCount += orderQuantity;
+    }
 }
