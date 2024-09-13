@@ -73,23 +73,22 @@ public class PurchaseGroupService {
 
     @Transactional(readOnly = true)
     public PurchaseGroup getPurchaseGroup(Long purchaseGroupId) {
+        return findById(purchaseGroupId);
+    }
+
+    // 공동 구매 참여
+    public PurchaseGroup participateInPurchaseGroup(Long purchaseGroupId, Integer orderQuantity) {
+        // 공동 구매 그룹 조회
+        PurchaseGroup purchaseGroup = findById(purchaseGroupId);
+        // 공동 구매 참여 가능 여부 확인
+        purchaseGroup.validatePurchaseGroupParticipation(orderQuantity);
+        // 구매 진행 상황 업데이트
+        return purchaseGroup.updatePurchaseProgress(orderQuantity);
+    }
+
+    // 공동 구매 그룹 찾기
+    private PurchaseGroup findById(Long purchaseGroupId) {
         return purchaseGroupRepository.findById(purchaseGroupId)
-            .orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 공동구매그룹입니다.")
-            );
+            .orElseThrow(() -> new IllegalArgumentException("공동 구매 그룹이 존재하지 않습니다."));
     }
-
-    @Transactional
-    public void updatePurchaseGroupParticipation(PurchaseGroup purchaseGroup, Integer orderQuantity) {
-        // 공동 구매 수량 업데이트
-        PurchaseGroup updatePurchaseGroup = purchaseGroup.updatePurchaseProgress(orderQuantity);
-        purchaseGroupRepository.save(updatePurchaseGroup);
-    }
-
-    public PurchaseGroup findById(Long purchaseGroupId) {
-        return purchaseGroupRepository.findById(purchaseGroupId)
-            .orElseThrow(() -> new IllegalArgumentException("공동구매 그룹이 존재하지 않습니다."));
-    }
-
-
 }

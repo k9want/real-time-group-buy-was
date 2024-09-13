@@ -36,14 +36,18 @@ public class OrderService {
     }
 
     @Transactional
+    public void checkPurchaseComplete(PurchaseGroup purchaseGroup) {
+        if (purchaseGroup.isCompleted()) {
+            updateOrdersToSuccess(purchaseGroup);
+        }
+    }
+
+    @Transactional
     public List<Order> updateOrdersToSuccess(PurchaseGroup purchaseGroup) {
         // 해당 공동 구매 그룹의 모든 APPROVE 상태의 주문 가져오기
-        List<Order> orders = orderRepository.findAllByPurchaseGroupAndStatus(
-            purchaseGroup, OrderStatus.APPROVE);
-
+        List<Order> orders = orderRepository.findAllByPurchaseGroupAndStatus(purchaseGroup, OrderStatus.APPROVE);
         // 각 주문 상태를 SUCCESS로 변경
         orders.forEach(Order::successPurchaseGroups);
-
         // 저장
         return orderRepository.saveAll(orders);
     }

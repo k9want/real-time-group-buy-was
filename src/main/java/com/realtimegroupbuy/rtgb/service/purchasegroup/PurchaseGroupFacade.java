@@ -17,25 +17,16 @@ public class PurchaseGroupFacade {
 
     @Transactional
     public Order participatePurchaseGroup(User user, Long purchaseGroupId, Integer orderQuantity) {
-        // 1. 공동 구매 그룹 가져오기
-        PurchaseGroup purchaseGroup = purchaseGroupService.findById(purchaseGroupId);
+        // 1.공동 구매 참여 (구매 참여 가능 여부 및 수량 업데이트)
+        PurchaseGroup purchaseGroup = purchaseGroupService.participateInPurchaseGroup(
+            purchaseGroupId, orderQuantity);
 
-        // 2. 공동 구매 참여 가능 여부 확인
-        purchaseGroup.validatePurchaseGroupParticipation(orderQuantity);
-
-        // 3. 주문 생성
+        // 2.주문 생성 및 결제 완료 처리
         Order order = orderService.create(user, purchaseGroup, orderQuantity);
+        order = orderService.completePayment(order);
 
-        // 4. 결제 완료 처리 [현재는 항상 결제 완료로 처리]
-        orderService.completePayment(order);
-
-        // 5. 공동 구매 그룹 업데이트
-        purchaseGroupService.updatePurchaseGroupParticipation(purchaseGroup, orderQuantity);
-
-        // 6.공동 구매 완료 여부 확인 및 상태 업데이트
-        if (purchaseGroup.isCompleted()) {
-            orderService.updateOrdersToSuccess(purchaseGroup);
-        }
+        // 3.공동 구매 완료 여부 확인 및 상태 업데이트
+        orderService.checkPurchaseComplete(purchaseGroup);
 
         return order;
     }
