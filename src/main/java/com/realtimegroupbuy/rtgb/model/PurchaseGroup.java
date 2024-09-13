@@ -35,7 +35,7 @@ public class PurchaseGroup {
     private User creator; // 공동 구매 개설자
 
     private Integer targetPurchaseQuantity; // 목표 구매 수량
-    private Integer currentPurchaseQuantityCount; // 현재 구매 수량
+    private Integer currentPurchaseQuantity; // 현재 구매 수량
     private LocalDateTime expiresAt; // 종료 시간
     @Enumerated(EnumType.STRING)
     private PurchaseGroupStatus status;
@@ -47,13 +47,13 @@ public class PurchaseGroup {
         }
 
         // 목표 구매 수량 < 현재 구매 수량 + 주문 수량
-        if (this.targetPurchaseQuantity < this.currentPurchaseQuantityCount + orderQuantity) {
+        if (this.targetPurchaseQuantity < this.currentPurchaseQuantity + orderQuantity) {
             throw new IllegalArgumentException("현재 재고가 부족하여 해당 수량을 구매할 수 없습니다.");
         }
     }
 
     // 공동 구매 수량 업데이트
     public void updatePurchaseQuantity(Integer orderQuantity) {
-        this.currentPurchaseQuantityCount += orderQuantity;
+        this.currentPurchaseQuantity += orderQuantity;
     }
 }

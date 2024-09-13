@@ -58,7 +58,7 @@ public class PurchaseGroupService {
             .product(product)
             .creator(creator)
             .targetPurchaseQuantity(targetQuantity)
-            .currentPurchaseQuantityCount(DEFAULT__CURRENT_PURCHASE_QUANTITY)
+            .currentPurchaseQuantity(DEFAULT__CURRENT_PURCHASE_QUANTITY)
             .expiresAt(expiredAt)
             .status(PurchaseGroupStatus.IN_PROGRESS)
             .build();
@@ -66,10 +66,17 @@ public class PurchaseGroupService {
         return purchaseGroupRepository.save(purchaseGroup);
     }
 
-    // 모든 공동 구매 그룹을 페이지네이션으로 조회
     @Transactional(readOnly = true)
     public Page<PurchaseGroup> getAllPurchaseGroups(Pageable pageable) {
         return purchaseGroupRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PurchaseGroup getPurchaseGroup(Long purchaseGroupId) {
+        return purchaseGroupRepository.findById(purchaseGroupId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 공동구매그룹입니다.")
+            );
     }
 
     @Transactional

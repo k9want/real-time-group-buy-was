@@ -21,7 +21,7 @@ public record CreatePurchaseGroupResponse(
             purchaseGroup.getProduct().getName(),
             purchaseGroup.getCreator().getNickname(),
             purchaseGroup.getTargetPurchaseQuantity(),
-            purchaseGroup.getCurrentPurchaseQuantityCount(),
+            purchaseGroup.getCurrentPurchaseQuantity(),
             purchaseGroup.getExpiresAt(),
             purchaseGroup.getStatus()
         );

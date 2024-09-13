@@ -7,7 +7,7 @@ public record PurchaseGroupResponse(
     Long groupId,
     String productName,
     Integer targetPurchaseQuantity,
-    Integer currentPurchaseQuantityCount,
+    Integer currentPurchaseQuantity,
     String creatorName,
     LocalDateTime expiresAt,
     String status
@@ -18,7 +18,7 @@ public record PurchaseGroupResponse(
             purchaseGroup.getId(),
             purchaseGroup.getProduct().getName(),
             purchaseGroup.getTargetPurchaseQuantity(),
-            purchaseGroup.getCurrentPurchaseQuantityCount(),
+            purchaseGroup.getCurrentPurchaseQuantity(),
             purchaseGroup.getCreator().getNickname(),
             purchaseGroup.getExpiresAt(),
             purchaseGroup.getStatus().name()
