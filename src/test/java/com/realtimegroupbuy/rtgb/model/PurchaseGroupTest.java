@@ -38,7 +38,7 @@ class PurchaseGroupTest {
             .nickname("testUser")
             .username("test@email.com")
             .password("password")
-            .role(UserRole.USER)
+            .role(UserRole.SELLER)
             .build();
 
         product = Product.builder()
