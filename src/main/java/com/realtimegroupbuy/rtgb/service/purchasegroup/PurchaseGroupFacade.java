@@ -3,7 +3,6 @@ package com.realtimegroupbuy.rtgb.service.purchasegroup;
 import com.realtimegroupbuy.rtgb.model.Order;
 import com.realtimegroupbuy.rtgb.model.PurchaseGroup;
 import com.realtimegroupbuy.rtgb.model.User;
-import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import com.realtimegroupbuy.rtgb.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,7 @@ public class PurchaseGroupFacade {
         purchaseGroupService.updatePurchaseGroupParticipation(purchaseGroup, orderQuantity);
 
         // 6.공동 구매 완료 여부 확인 및 상태 업데이트
-        if (purchaseGroup.getStatus() == PurchaseGroupStatus.COMPLETED) {
+        if (purchaseGroup.isCompleted()) {
             orderService.updateOrdersToSuccess(purchaseGroup);
         }
 

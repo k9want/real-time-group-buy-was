@@ -18,7 +18,6 @@ public class OrderService {
 
     @Transactional
     public Order create(User user, PurchaseGroup purchaseGroup, Integer orderQuantity) {
-        // 1. 주문 생성
         Order order = Order.builder()
             .user(user)
             .purchaseGroup(purchaseGroup)
@@ -26,32 +25,26 @@ public class OrderService {
             .status(OrderStatus.PENDING)
             .build();
 
-        // 2. 주문 총 금액 계산
-        order.calculateTotalAmount();
-
-        // 3. 주문 저장
         return orderRepository.save(order);
     }
 
     @Transactional
-    public void completePayment(Order order) {
+    public Order completePayment(Order order) {
         // 결제 완료 처리
-        order.completePayment();
-        orderRepository.save(order);
+        Order completePayment = order.completePayment();
+        return orderRepository.save(completePayment);
     }
 
     @Transactional
-    public void updateOrdersToSuccess(PurchaseGroup purchaseGroup) {
+    public List<Order> updateOrdersToSuccess(PurchaseGroup purchaseGroup) {
         // 해당 공동 구매 그룹의 모든 APPROVE 상태의 주문 가져오기
         List<Order> orders = orderRepository.findAllByPurchaseGroupAndStatus(
             purchaseGroup, OrderStatus.APPROVE);
 
         // 각 주문 상태를 SUCCESS로 변경
-        for (Order order : orders) {
-            order.successPurchaseGroups();
-        }
+        orders.forEach(Order::successPurchaseGroups);
 
         // 저장
-        orderRepository.saveAll(orders);
+        return orderRepository.saveAll(orders);
     }
 }
