@@ -1,15 +1,17 @@
 package com.realtimegroupbuy.rtgb.service.purchasegroup;
 
-import com.realtimegroupbuy.rtgb.model.PurchaseGroup;
 import com.realtimegroupbuy.rtgb.model.Product;
+import com.realtimegroupbuy.rtgb.model.PurchaseGroup;
 import com.realtimegroupbuy.rtgb.model.User;
-import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import com.realtimegroupbuy.rtgb.model.enums.ProductStatus;
-import com.realtimegroupbuy.rtgb.repository.PurchaseGroupRepository;
+import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
+import com.realtimegroupbuy.rtgb.repository.PurchaseGroupRepository;
 import com.realtimegroupbuy.rtgb.repository.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +64,12 @@ public class PurchaseGroupService {
             .build();
 
         return purchaseGroupRepository.save(purchaseGroup);
+    }
+
+    // 모든 공동 구매 그룹을 페이지네이션으로 조회
+    @Transactional(readOnly = true)
+    public Page<PurchaseGroup> getAllPurchaseGroups(Pageable pageable) {
+        return purchaseGroupRepository.findAll(pageable);
     }
 
     @Transactional
