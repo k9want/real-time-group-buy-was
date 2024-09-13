@@ -60,7 +60,7 @@ public class Order {
     // 결제
     public void completePayment() {
         if (this.status == OrderStatus.PENDING) {
-            this.status = OrderStatus.COMPLETED;
+            this.status = OrderStatus.APPROVE;
         } else {
             throw new IllegalStateException("결제가 이미 완료되었습니다.");
         }

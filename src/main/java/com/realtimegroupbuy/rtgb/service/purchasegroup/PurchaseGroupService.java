@@ -81,9 +81,8 @@ public class PurchaseGroupService {
 
     @Transactional
     public void updatePurchaseGroupParticipation(PurchaseGroup purchaseGroup, Integer orderQuantity) {
-        // 공동 구매 그룹에 구매 수량 업데이트 요청
-        purchaseGroup.updatePurchaseQuantity(orderQuantity);
-        purchaseGroupRepository.save(purchaseGroup); // 변경된 상태를 저장
+        purchaseGroup.updatePurchaseProgress(orderQuantity);
+        purchaseGroupRepository.save(purchaseGroup);
     }
 
     public PurchaseGroup findById(Long purchaseGroupId) {

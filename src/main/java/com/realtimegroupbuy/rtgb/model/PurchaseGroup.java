@@ -52,8 +52,12 @@ public class PurchaseGroup {
         }
     }
 
-    // 공동 구매 수량 업데이트
-    public void updatePurchaseQuantity(Integer orderQuantity) {
+    // 구매 진행 상황 업데이트
+    public void updatePurchaseProgress(Integer orderQuantity) {
         this.currentPurchaseQuantity += orderQuantity;
+
+        if (this.targetPurchaseQuantity.equals(this.currentPurchaseQuantity)) {
+            this.status = PurchaseGroupStatus.COMPLETED;
+        }
     }
 }
