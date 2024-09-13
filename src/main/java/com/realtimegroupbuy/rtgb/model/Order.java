@@ -48,7 +48,7 @@ public class Order {
         this.user = user;
         this.purchaseGroup = purchaseGroup;
         this.quantity = quantity;
-        this.totalAmount = this.purchaseGroup.getProduct().getPrice() * this.quantity;
+        this.totalAmount = purchaseGroup.getProduct().getPrice() * quantity;
         this.status = status;
     }
 
