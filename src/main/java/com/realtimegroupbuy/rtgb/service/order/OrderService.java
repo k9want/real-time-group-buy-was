@@ -47,7 +47,7 @@ public class OrderService {
         // 해당 공동 구매 그룹의 모든 APPROVE 상태의 주문 가져오기
         List<Order> orders = orderRepository.findAllByPurchaseGroupAndStatus(purchaseGroup, OrderStatus.APPROVE);
         // 각 주문 상태를 SUCCESS로 변경
-        orders.forEach(Order::successPurchaseGroups);
+        orders.forEach(Order::success);
         // 저장
         return orderRepository.saveAll(orders);
     }

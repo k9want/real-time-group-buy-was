@@ -63,8 +63,8 @@ public class Order {
         return this;
     }
 
-    // 공동 구매 주문 성공
-    public Order successPurchaseGroups() {
+    // 공동 구매 완료 시 -> 주문 성공
+    public Order success() {
         this.status = OrderStatus.SUCCESS;
         return this;
     }
