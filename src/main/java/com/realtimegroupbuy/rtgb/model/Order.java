@@ -65,4 +65,9 @@ public class Order {
             throw new IllegalStateException("결제가 이미 완료되었습니다.");
         }
     }
+
+    // 공동 구매 주문 성공
+    public void successPurchaseGroups() {
+        this.status = OrderStatus.SUCCESS;
+    }
 }

@@ -5,6 +5,7 @@ import com.realtimegroupbuy.rtgb.model.PurchaseGroup;
 import com.realtimegroupbuy.rtgb.model.User;
 import com.realtimegroupbuy.rtgb.model.enums.OrderStatus;
 import com.realtimegroupbuy.rtgb.repository.OrderRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,5 +38,20 @@ public class OrderService {
         // 결제 완료 처리
         order.completePayment();
         orderRepository.save(order);
+    }
+
+    @Transactional
+    public void updateOrdersToSuccess(PurchaseGroup purchaseGroup) {
+        // 해당 공동 구매 그룹의 모든 APPROVE 상태의 주문 가져오기
+        List<Order> orders = orderRepository.findAllByPurchaseGroupAndStatus(
+            purchaseGroup, OrderStatus.APPROVE);
+
+        // 각 주문 상태를 SUCCESS로 변경
+        for (Order order : orders) {
+            order.successPurchaseGroups();
+        }
+
+        // 저장
+        orderRepository.saveAll(orders);
     }
 }
