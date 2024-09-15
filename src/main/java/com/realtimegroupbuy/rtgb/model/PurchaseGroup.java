@@ -48,7 +48,7 @@ public class PurchaseGroup {
 
         // 목표 구매 수량 < 현재 구매 수량 + 주문 수량
         if (this.targetPurchaseQuantity < this.currentPurchaseQuantity + orderQuantity) {
-            throw new IllegalArgumentException("현재 재고가 부족하여 해당 수량을 구매할 수 없습니다.");
+            throw new IllegalArgumentException("현재 재고보다 많은 수량을 주문할 수 없습니다.");
         }
     }
 

@@ -80,7 +80,7 @@ class PurchaseGroupTest {
                 });
 
             //then
-            assertEquals("현재 재고가 부족하여 해당 수량을 구매할 수 없습니다.", exception.getMessage());
+            assertEquals("현재 재고보다 많은 수량을 주문할 수 없습니다.", exception.getMessage());
         }
 
         @Test
