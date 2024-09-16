@@ -79,11 +79,27 @@ public class PurchaseGroupService {
     // 공동 구매 참여
     public PurchaseGroup participateInPurchaseGroup(Long purchaseGroupId, Integer orderQuantity) {
         // 공동 구매 그룹 조회
-        PurchaseGroup purchaseGroup = findById(purchaseGroupId);
+        PurchaseGroup purchaseGroup = findByIdWithLock(purchaseGroupId);
         // 공동 구매 참여 가능 여부 확인
         purchaseGroup.validatePurchaseGroupParticipation(orderQuantity);
         // 구매 진행 상황 업데이트
         return purchaseGroup.updatePurchaseProgress(orderQuantity);
+    }
+
+    public void completePurchaseGroup(PurchaseGroup purchaseGroup) {
+        // 비관적 락으로 해당 PurchaseGroup을 보호
+        PurchaseGroup lockedGroup = findByIdWithLock(purchaseGroup.getId());
+
+        if (lockedGroup.getCurrentPurchaseQuantity().equals(lockedGroup.getTargetPurchaseQuantity())) {
+            lockedGroup.complete();  // 상태 변경
+            purchaseGroupRepository.save(lockedGroup);
+        }
+    }
+
+    // 공동 구매 그룹 찾기
+    private PurchaseGroup findByIdWithLock(Long purchaseGroupId) {
+        return purchaseGroupRepository.findByIdWithPessimisticLock(purchaseGroupId)
+            .orElseThrow(() -> new IllegalArgumentException("공동 구매 그룹이 존재하지 않습니다."));
     }
 
     // 공동 구매 그룹 찾기
