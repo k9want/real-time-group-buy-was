@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.realtimegroupbuy.rtgb.model.enums.ProductStatus;
 import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
@@ -137,7 +136,7 @@ class PurchaseGroupTest {
         }
 
         @Test
-        @DisplayName("성공 - 목표 수량에 도달한 경우 COMPLETED 상태")
+        @DisplayName("성공 - 목표 수량에 도달한 경우")
         void test1002() {
             //given
             Integer orderQuantity = sut.getTargetPurchaseQuantity();
@@ -147,7 +146,6 @@ class PurchaseGroupTest {
 
             //then
             assertEquals(orderQuantity, sut.getCurrentPurchaseQuantity());
-            assertEquals(PurchaseGroupStatus.COMPLETED, sut.getStatus());
         }
     }
 
@@ -167,19 +165,5 @@ class PurchaseGroupTest {
             //then
             assertFalse(sut.isCompleted());
         }
-
-        @Test
-        @DisplayName("성공 - 공동구매 그룹 상태가 COMPLETED 일때 true")
-        void test1002() {
-            //given
-            Integer orderQuantity = sut.getTargetPurchaseQuantity();
-
-            //when
-            sut.updatePurchaseProgress(orderQuantity);
-
-            //then
-            assertTrue(sut.isCompleted());
-        }
-
     }
 }

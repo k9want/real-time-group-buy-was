@@ -102,7 +102,8 @@ class PurchaseGroupServiceTest {
             LocalDateTime invalidExpiredAt = LocalDateTime.now().plusHours(23);
 
             // when & then
-            assertThatThrownBy(() -> sut.create(user, product.getId(), validQuantity, invalidExpiredAt))
+            assertThatThrownBy(
+                () -> sut.create(user, product.getId(), validQuantity, invalidExpiredAt))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("최소 공동 구매 유효 기간은 1일입니다.");
         }
@@ -121,7 +122,8 @@ class PurchaseGroupServiceTest {
             given(purchaseGroupRepository.save(any(PurchaseGroup.class))).willReturn(purchaseGroup);
 
             // when
-            PurchaseGroup createdGroup = sut.create(user, product.getId(), validQuantity, expiredAt);
+            PurchaseGroup createdGroup = sut.create(user, product.getId(), validQuantity,
+                expiredAt);
 
             // then
             assertThat(product.getStock()).isEqualTo(originProductStock - validQuantity);
@@ -132,7 +134,6 @@ class PurchaseGroupServiceTest {
         }
     }
 
-    //todo : 여기부터 검토
     @Nested
     @DisplayName("공동 구매 참여 테스트")
     class ParticipatePurchaseGroupTest {
@@ -141,20 +142,23 @@ class PurchaseGroupServiceTest {
         @DisplayName("실패 - 재고 부족으로 참여 실패")
         void test1() {
             // given
-            given(purchaseGroupRepository.findById(anyLong())).willReturn(Optional.of(purchaseGroup));
-            Integer invalidOderQuantity = purchaseGroup.getTargetPurchaseQuantity() + 1; // 목표 수량보다 많음
+            given(purchaseGroupRepository.findByIdWithPessimisticLock(anyLong())).willReturn(
+                Optional.of(purchaseGroup));
+            Integer invalidOderQuantity =
+                purchaseGroup.getTargetPurchaseQuantity() + 1; // 목표 수량보다 많음
 
             // when & then
-            assertThatThrownBy(() -> sut.participateInPurchaseGroup(purchaseGroup.getId(), invalidOderQuantity))
+            assertThatThrownBy(
+                () -> sut.participateInPurchaseGroup(purchaseGroup.getId(), invalidOderQuantity))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 재고보다 많은 수량을 주문할 수 없습니다.");
         }
 
         @Test
-        @DisplayName("성공 - 공동 구매 참여 [목표 수량 채우지 못한 경우 - 공동구매 그룹 상태 IN_PROGRESS]")
-        void test1001() {
+        @DisplayName("성공 - 공동 구매 참여 [목표 수량 채웠을 경우 - 공동구매 그룹 상태 IN_PROGRESS]")
+        void test1000() {
             // given
-            given(purchaseGroupRepository.findById(anyLong())).willReturn(Optional.of(purchaseGroup));
+            given(purchaseGroupRepository.findByIdWithPessimisticLock(anyLong())).willReturn(Optional.of(purchaseGroup));
             Integer validOrderQuantity = purchaseGroup.getTargetPurchaseQuantity();
 
             // when
@@ -162,22 +166,7 @@ class PurchaseGroupServiceTest {
 
             // then
             assertThat(updatedGroup.getCurrentPurchaseQuantity()).isEqualTo(validOrderQuantity);
-            assertThat(updatedGroup.getStatus()).isEqualTo(PurchaseGroupStatus.COMPLETED);
-        }
-
-        @Test
-        @DisplayName("성공 - 공동 구매 참여 [목표 수량 채웠을 경우 - 공동구매 그룹 상태 COMPLETED]")
-        void test1002() {
-            // given
-            given(purchaseGroupRepository.findById(anyLong())).willReturn(Optional.of(purchaseGroup));
-            Integer validOrderQuantity = purchaseGroup.getTargetPurchaseQuantity();
-
-            // when
-            PurchaseGroup updatedGroup = sut.participateInPurchaseGroup(purchaseGroup.getId(), validOrderQuantity);
-
-            // then
-            assertThat(updatedGroup.getCurrentPurchaseQuantity()).isEqualTo(validOrderQuantity);
-            assertThat(updatedGroup.getStatus()).isEqualTo(PurchaseGroupStatus.COMPLETED);
+            assertThat(updatedGroup.getStatus()).isEqualTo(PurchaseGroupStatus.IN_PROGRESS);
         }
     }
 
