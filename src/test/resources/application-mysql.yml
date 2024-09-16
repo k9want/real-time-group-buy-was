@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/rtgb-concurrency-test-db
+    username: root
+    password: root1234!!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
+#  transaction:
+#    isolation: SERIALIZABLE  # 높은 트랜잭션 격리 수준
+
+logging:
+  level:
+    org.hibernate.SQL: debug
