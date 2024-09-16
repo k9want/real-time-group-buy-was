@@ -9,10 +9,14 @@ spring:
       enabled: true
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+
   sql:
     init:
       schema-locations: classpath:schema.sql
-#      data-locations: classpath:data.sql
+
+logging:
+  level:
+    org.hibernate.SQL: info

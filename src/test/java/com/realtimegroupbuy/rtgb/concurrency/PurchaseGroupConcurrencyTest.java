@@ -25,9 +25,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-//@ActiveProfiles("mysql") // application-mysql.yml 사용
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class PurchaseGroupConcurrencyTest {
@@ -99,7 +100,7 @@ public class PurchaseGroupConcurrencyTest {
     @WithMockUser(username = "testUser@test.com", roles = {"USER"})
     @DisplayName("동시성 이슈 테스트 - 여러 스레드가 동시에 공동구매 참여")
     void testConcurrentPurchaseGroupParticipation() throws InterruptedException {
-        int numberOfThreads = 10;
+        int numberOfThreads = 32;
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
@@ -111,7 +112,7 @@ public class PurchaseGroupConcurrencyTest {
                     PurchaseGroup pg = purchaseGroupRepository.findById(purchaseGroup.getId()).get();
                     System.out.println("스레드 " + threadNumber + " 시작: 현재 수량 - " + pg.getCurrentPurchaseQuantity());
 
-                    sut.participatePurchaseGroup(user, pg.getId(), 100);
+                    sut.participatePurchaseGroup(user, pg.getId(), 50);
 
                     // DB에서 값을 다시 읽어 최종 결과 확인
                     PurchaseGroup updatedPurchaseGroup = purchaseGroupRepository.findById(pg.getId()).get();
