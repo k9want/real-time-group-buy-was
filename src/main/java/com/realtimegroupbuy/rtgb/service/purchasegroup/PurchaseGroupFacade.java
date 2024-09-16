@@ -26,7 +26,7 @@ public class PurchaseGroupFacade {
         order = orderService.completePayment(order);
 
         // 3. 공동 구매 완료 여부 확인 및 상태 업데이트
-        if (purchaseGroup.getCurrentPurchaseQuantity().equals(purchaseGroup.getTargetPurchaseQuantity())) {
+        if (!purchaseGroup.isCompleted() && purchaseGroup.getCurrentPurchaseQuantity().equals(purchaseGroup.getTargetPurchaseQuantity())) {
             purchaseGroupService.completePurchaseGroup(purchaseGroup);
         }
 

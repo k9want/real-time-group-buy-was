@@ -88,7 +88,7 @@ public class PurchaseGroupService {
 
     public void completePurchaseGroup(PurchaseGroup purchaseGroup) {
         // 비관적 락으로 해당 PurchaseGroup을 보호
-        PurchaseGroup lockedGroup = findByIdWithLock(purchaseGroup.getId());
+        PurchaseGroup lockedGroup = findById(purchaseGroup.getId());
 
         if (lockedGroup.getCurrentPurchaseQuantity().equals(lockedGroup.getTargetPurchaseQuantity())) {
             lockedGroup.complete();  // 상태 변경
