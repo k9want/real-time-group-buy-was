@@ -4,6 +4,22 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root1234!!
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          multiplier: 2
+        default-requeue-rejected: false
+    template:
+      mandatory: true
   jpa:
     hibernate:
       ddl-auto: update  # 테스트 후 DB를 삭제하고 싶으면 create-drop
@@ -13,3 +29,4 @@ spring:
 logging:
   level:
     org.hibernate.SQL: info
+

@@ -1,7 +1,8 @@
-package com.realtimegroupbuy.rtgb.concurrency;
+package com.realtimegroupbuy.rtgb.purchaseparticiaption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.realtimegroupbuy.rtgb.messaging.PurchaseParticipationRequest;
 import com.realtimegroupbuy.rtgb.model.Product;
 import com.realtimegroupbuy.rtgb.model.PurchaseGroup;
 import com.realtimegroupbuy.rtgb.model.Seller;
@@ -11,45 +12,51 @@ import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import com.realtimegroupbuy.rtgb.model.enums.UserRole;
 import com.realtimegroupbuy.rtgb.repository.ProductRepository;
 import com.realtimegroupbuy.rtgb.repository.PurchaseGroupRepository;
+import com.realtimegroupbuy.rtgb.repository.PurchaseParticipationLogRepository;
 import com.realtimegroupbuy.rtgb.repository.SellerRepository;
 import com.realtimegroupbuy.rtgb.repository.UserRepository;
-import com.realtimegroupbuy.rtgb.service.purchasegroup.PurchaseGroupFacade;
+import com.realtimegroupbuy.rtgb.service.purchasegroup.PurchaseGroupPublisher;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@Slf4j
 @ActiveProfiles("mysql")
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class PurchaseGroupConcurrencyTest {
-
+public class PurchaseGroupConcurrencyWithRabbitMQTest {
 
     @Autowired
-    private PurchaseGroupFacade sut;
+    private RabbitTemplate rabbitTemplate;
 
-    private User user;
-    private PurchaseGroup purchaseGroup;
+    @Autowired
+    private PurchaseGroupPublisher purchaseGroupPublisher;
+
+    @Autowired
+    private PurchaseParticipationLogRepository logRepository;
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private ProductRepository productRepository;
+
     @Autowired
     private SellerRepository sellerRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
     @Autowired
     private PurchaseGroupRepository purchaseGroupRepository;
+
+    private User user;
+    private PurchaseGroup purchaseGroup;
 
     @BeforeEach
     void setUp() {
@@ -101,33 +108,35 @@ public class PurchaseGroupConcurrencyTest {
 
     @Test
     @WithMockUser(username = "testUser@test.com", roles = {"USER"})
-    @DisplayName("동시성 이슈 테스트 - 여러 스레드가 동시에 공동구매 참여")
-    void testConcurrentPurchaseGroupParticipation() throws InterruptedException {
-        int numberOfThreads = 23;
+    @DisplayName("동시성 이슈 테스트 - RabbitMQ를 통한 공동구매 참여")
+    void testConcurrentPurchaseGroupParticipationWithRabbitMQ() throws InterruptedException {
+        int numberOfThreads = 32;
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
-        // 스레드 시작 시 PurchaseGroup을 DB에서 다시 조회
-        PurchaseGroup pg = purchaseGroupRepository.findById(purchaseGroup.getId()).get();
+        // When: 여러 스레드에서 동시에 참여 요청을 발행
         for (int i = 0; i < numberOfThreads; i++) {
-            final int threadNumber = i; // 스레드 번호를 기록
             executorService.submit(() -> {
                 try {
-                    log.info("Thread {} started: Current quantity", threadNumber);
-
-                    sut.participatePurchaseGroup(user, pg.getId(), 50);
-
-                    log.info("Thread {} completed: Updated quantity", threadNumber);
+                    // RabbitMQ에 참여 요청 메시지 발행
+                    PurchaseParticipationRequest request = PurchaseParticipationRequest.builder()
+                        .requestId(UUID.randomUUID())
+                        .userId(user.getId())
+                        .purchaseGroupId(purchaseGroup.getId())
+                        .orderQuantity(5)
+                        .build();
+                    purchaseGroupPublisher.participatePurchaseGroup(user, request.getPurchaseGroupId(), request.getOrderQuantity());
                 } finally {
                     latch.countDown();
                 }
             });
         }
 
-        latch.await();
+        // 메시지 처리를 기다림 (5초 대기)
+        Thread.sleep(5000);
 
-        // 결과 확인
+        // 결과 확인: 로그와 데이터베이스에서 참여 결과를 확인
         PurchaseGroup updatedPurchaseGroup = purchaseGroupRepository.findById(purchaseGroup.getId()).get();
-        assertThat(updatedPurchaseGroup.getCurrentPurchaseQuantity()).isEqualTo(1000); // 수량이 1000이 되어야 함
+        assertThat(updatedPurchaseGroup.getCurrentPurchaseQuantity()).isEqualTo(160); // 수량이 1000이 되어야 함
     }
 }
