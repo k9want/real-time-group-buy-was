@@ -31,7 +31,7 @@ public class PurchaseGroup {
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "users_id")
     private User creator; // 공동 구매 개설자
 
     private Integer targetPurchaseQuantity; // 목표 구매 수량
