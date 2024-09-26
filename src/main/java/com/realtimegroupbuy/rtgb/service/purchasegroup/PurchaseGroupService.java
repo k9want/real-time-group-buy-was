@@ -77,13 +77,17 @@ public class PurchaseGroupService {
     }
 
     // 공동 구매 참여
+    @Transactional
     public PurchaseGroup participateInPurchaseGroup(Long purchaseGroupId, Integer orderQuantity) {
         // 공동 구매 그룹 조회
         PurchaseGroup purchaseGroup = findByIdWithLock(purchaseGroupId);
         // 공동 구매 참여 가능 여부 확인
         purchaseGroup.validatePurchaseGroupParticipation(orderQuantity);
         // 구매 진행 상황 업데이트
-        return purchaseGroup.updatePurchaseProgress(orderQuantity);
+        purchaseGroup.updatePurchaseProgress(orderQuantity);
+        // 업데이트된 그룹 저장
+        purchaseGroupRepository.save(purchaseGroup);
+        return purchaseGroup;
     }
 
     public void completePurchaseGroup(PurchaseGroup purchaseGroup) {

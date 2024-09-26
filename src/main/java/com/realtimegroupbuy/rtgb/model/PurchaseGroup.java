@@ -1,5 +1,7 @@
 package com.realtimegroupbuy.rtgb.model;
 
+import com.realtimegroupbuy.rtgb.exception.PurchaseGroupFullException;
+import com.realtimegroupbuy.rtgb.exception.PurchaseGroupStatusNotInProgressException;
 import com.realtimegroupbuy.rtgb.model.enums.PurchaseGroupStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,19 +45,18 @@ public class PurchaseGroup {
     // 공동 구매 참여 가능 여부 확인 메서드
     public void validatePurchaseGroupParticipation(Integer orderQuantity) {
         if (this.status != PurchaseGroupStatus.IN_PROGRESS) {
-            throw new IllegalStateException("현재 공동구매에 참여할 수 없습니다.");
+            throw new PurchaseGroupStatusNotInProgressException("현재 공동구매에 참여할 수 없습니다.");
         }
 
         // 목표 구매 수량 < 현재 구매 수량 + 주문 수량
         if (this.targetPurchaseQuantity < this.currentPurchaseQuantity + orderQuantity) {
-            throw new IllegalArgumentException("현재 재고보다 많은 수량을 주문할 수 없습니다.");
+            throw new PurchaseGroupFullException("현재 재고보다 많은 수량을 주문할 수 없습니다.");
         }
     }
 
     // 구매 진행 상황 업데이트
-    public PurchaseGroup updatePurchaseProgress(Integer orderQuantity) {
+    public void updatePurchaseProgress(Integer orderQuantity) {
         this.currentPurchaseQuantity += orderQuantity;
-        return this;
     }
 
     // 공동 구매 완료 여부 확인
