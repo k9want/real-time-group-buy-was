@@ -39,6 +39,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'  // Lombok 어노테이션을 테스트에서도 처리
     testRuntimeOnly 'com.h2database:h2'
 }
 

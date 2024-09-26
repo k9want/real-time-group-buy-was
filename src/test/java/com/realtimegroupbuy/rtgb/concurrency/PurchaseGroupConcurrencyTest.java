@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,10 +29,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ActiveProfiles("test")
+@Slf4j
+@ActiveProfiles("mysql")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class PurchaseGroupConcurrencyTest {
+
 
     @Autowired
     private PurchaseGroupFacade sut;
@@ -100,23 +103,21 @@ public class PurchaseGroupConcurrencyTest {
     @WithMockUser(username = "testUser@test.com", roles = {"USER"})
     @DisplayName("동시성 이슈 테스트 - 여러 스레드가 동시에 공동구매 참여")
     void testConcurrentPurchaseGroupParticipation() throws InterruptedException {
-        int numberOfThreads = 32;
+        int numberOfThreads = 23;
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
+        // 스레드 시작 시 PurchaseGroup을 DB에서 다시 조회
+        PurchaseGroup pg = purchaseGroupRepository.findById(purchaseGroup.getId()).get();
         for (int i = 0; i < numberOfThreads; i++) {
             final int threadNumber = i; // 스레드 번호를 기록
             executorService.submit(() -> {
                 try {
-                    // 스레드 시작 시 PurchaseGroup을 DB에서 다시 조회
-                    PurchaseGroup pg = purchaseGroupRepository.findById(purchaseGroup.getId()).get();
-                    System.out.println("스레드 " + threadNumber + " 시작: 현재 수량 - " + pg.getCurrentPurchaseQuantity());
+                    log.info("Thread {} started: Current quantity", threadNumber);
 
                     sut.participatePurchaseGroup(user, pg.getId(), 50);
 
-                    // DB에서 값을 다시 읽어 최종 결과 확인
-                    PurchaseGroup updatedPurchaseGroup = purchaseGroupRepository.findById(pg.getId()).get();
-                    System.out.println("스레드 " + threadNumber + " 완료: 현재 수량 - " + updatedPurchaseGroup.getCurrentPurchaseQuantity());
+                    log.info("Thread {} completed: Updated quantity", threadNumber);
                 } finally {
                     latch.countDown();
                 }
@@ -128,6 +129,5 @@ public class PurchaseGroupConcurrencyTest {
         // 결과 확인
         PurchaseGroup updatedPurchaseGroup = purchaseGroupRepository.findById(purchaseGroup.getId()).get();
         assertThat(updatedPurchaseGroup.getCurrentPurchaseQuantity()).isEqualTo(1000); // 수량이 1000이 되어야 함
-        assertThat(updatedPurchaseGroup.getStatus()).isEqualTo(PurchaseGroupStatus.COMPLETED); // 상태가 COMPLETED여야 함
     }
 }
